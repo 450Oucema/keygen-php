@@ -1,0 +1,23 @@
+{
+    "name": "oucema/keygen-client",
+    "description": "Keygen.sh library in goal to manage, validate, activate licenses",
+    "type": "library",
+    "require": {
+        "symfony/http-client": "5.4"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "5.4"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "KeygenClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oucema Jlaiel",
+            "email": "oucema@movida-mail.com"
+        }
+    ]
+}
