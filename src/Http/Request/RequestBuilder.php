@@ -2,28 +2,24 @@
 
 namespace KeygenClient\Http\Request;
 
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use KeygenClient\Http\Client\HttpClient;
+use KeygenClient\Security\Authentication;
+use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class RequestBuilder
 {
-    private HttpClientInterface $client;
+    private Authentication $authentication;
 
-    public function __construct(string $keygenAccountId, string $keygenAccountToken)
+    public function __construct(Authentication $authentication)
     {
-        $this->client = HttpClient::create([
-            'auth_bearer' => $keygenAccountToken,
-            'base_uri' => "https://api.keygen.sh/v1/accounts/{$keygenAccountId}/"
-        ]);
+        $this->authentication = $authentication;
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     */
     public function build(string $method, string $route, ?array $options = []): ResponseInterface
     {
-        return $this->client->request($method, $route, $options);
+        $client = new HttpClient($this->authentication, new CurlHttpClient());
+
+        return $client->sendRequest($method, $route, $options);
     }
 }
