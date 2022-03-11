@@ -6,6 +6,8 @@ use DateTime;
 
 class License extends AbstractKeygenModel
 {
+    public const OBJECT = 'licenses';
+
     private ?string $name = null;
     private ?string $key = null;
     private ?string $expiry = null;

@@ -4,6 +4,8 @@ namespace KeygenClient\Model;
 
 class User extends AbstractKeygenModel
 {
+    public const OBJECT = 'users';
+
     private ?string $firstName = null;
     private ?string $lastName = null;
     private ?string $email = null;

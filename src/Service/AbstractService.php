@@ -4,25 +4,41 @@ namespace KeygenClient\Service;
 
 use KeygenClient\Contracts\KeygenModel;
 use KeygenClient\Http\Request\RequestBuilder;
+use KeygenClient\Model\License;
+use KeygenClient\Model\User;
+use KeygenClient\Security\Authentication;
 
 abstract class AbstractService
 {
-    protected static array $config = [];
+    protected string $route;
+
     private RequestBuilder $requestBuilder;
 
-    public static function getRoute(): string
+    public function getRoute(): string
     {
-        return static::$config['route'];
+        return $this->route;
     }
 
-    public function __construct(string $keygenAccountId, string $keygenAccountToken)
+    public function getClass(): ?KeygenModel
     {
-        $this->requestBuilder = new RequestBuilder($keygenAccountId, $keygenAccountToken);
+        switch ($this->route) {
+            case License::OBJECT:
+                return new License();
+            case User::OBJECT:
+                return new User();
+            default:
+                throw new \LogicException("No object is registered for route '{$this->route}'");
+        }
+    }
+
+    public function __construct(Authentication $authentication)
+    {
+        $this->requestBuilder = new RequestBuilder($authentication);
     }
 
     public function all($params = []): array
     {
-        $route = static::getRoute(). '/?limit=100';
+        $route = $this->getRoute(). '/?limit=100';
 
         $response = $this->requestBuilder->build('GET', $route, $params);
         $content = $response->getContent();
@@ -31,7 +47,7 @@ abstract class AbstractService
 
         foreach ($collection['data'] as $data) {
             /** @var KeygenModel $model */
-            $model = static::$config['class'];
+            $model = $this->getClass();
             $models[] = $model->parse($data);
         }
 
@@ -46,7 +62,7 @@ abstract class AbstractService
         $data = json_decode($content, true);
 
         /** @var KeygenModel $model */
-        $model = static::$config['class'];
+        $model = $this->getClass();
 
         return $model->parse($data);
     }
